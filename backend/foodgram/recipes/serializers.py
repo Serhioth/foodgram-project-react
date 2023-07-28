@@ -77,10 +77,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         serialized_ingredients = IngredientSerializer(
             ingredients,
             many=True
-            ).data
+        ).data
         for i, ingredient in enumerate(ingredients):
             serialized_ingredients[i]['amount'] = IngredientAmount.objects.get(
                 recipe=recipe,
                 ingredient=ingredient
-                ).amount
+            ).amount
         return serialized_ingredients

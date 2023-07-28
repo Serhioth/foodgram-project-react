@@ -34,7 +34,7 @@ def make_pdf(ingredient_amount_list, spacing=1):
                 txt=item,
                 border=1
             )
-        pdf.ln(row_height*spacing)
+        pdf.ln(row_height * spacing)
 
     return pdf.output(dest='S').encode('latin-1')
 

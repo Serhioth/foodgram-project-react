@@ -30,7 +30,7 @@ def make_pdf(ingredient_amount_list, spacing=1):
         for item in row:
             pdf.cell(
                 col_width,
-                row_height*spacing,
+                row_height * spacing,
                 txt=item,
                 border=1
             )

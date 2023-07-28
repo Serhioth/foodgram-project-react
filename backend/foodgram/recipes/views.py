@@ -71,11 +71,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return response
 
     @action(
-            methods=('POST', 'DELETE'),
-            url_path='shopping_cart',
-            detail=True,
-            permission_classes=(IsAuthenticated, )
-        )
+        methods=('POST', 'DELETE'),
+        url_path='shopping_cart',
+        detail=True,
+        permission_classes=(IsAuthenticated, )
+    )
     def add_to_shopping_cart(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user

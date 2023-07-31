@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
@@ -56,13 +57,7 @@ class CustomUserViewSet(UserViewSet):
 
         user = request.user
 
-        try:
-            subscribe = User.objects.get(id=pk)
-        except User.DoesNotExist:
-            return Response(
-                {'message': 'User does not exists'},
-                status=HTTPStatus.NOT_FOUND
-            )
+        subscribe = get_object_or_404(User, pk=pk)
 
         if request.method == 'POST':
 

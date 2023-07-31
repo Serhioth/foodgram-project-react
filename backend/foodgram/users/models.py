@@ -5,7 +5,6 @@ from django.db import models
 class User(AbstractUser):
     """Custom user-model class"""
 
-    is_subscribed = models.BooleanField(default=False)
     subscribes = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     email = models.EmailField(
@@ -16,7 +15,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
 
     def get_subscribes(self):
         return (

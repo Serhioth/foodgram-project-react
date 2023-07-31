@@ -17,7 +17,7 @@ class RecipeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['favorited', 'in_shopping_cart', 'author', 'tags']
+        fields = ('favorited', 'in_shopping_cart', 'author', 'tags')
 
     def filter_is_favorited(self, queryset, name, value):
         if value:

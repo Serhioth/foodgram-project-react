@@ -11,11 +11,11 @@ from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from foodgram.settings import CONTENT_TYPE
 from recipes.filters import RecipeFilter
 from recipes.models import Recipe, Tag
 from recipes.renderers import PdfRenderer
 from recipes.serializers import RecipeSerializer, TagSerializer
-from recipes.shopping_cart import get_shopping_list
 
 dotenv.load_dotenv()
 
@@ -43,7 +43,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filter_class = RecipeFilter
-    ordering_fields = ['created_at', 'updated_at']
+    ordering_fields = ('created_at', 'updated_at')
     http_method_names = ('get', 'post', 'patch', 'delete')
 
     @action(
@@ -57,10 +57,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         now = datetime.now()
         time = now.strftime('%Y-%m-%d')
         pdf_data = {
-            'ingredient_amount_list': get_shopping_list(request.user.id),
+            'user': request.user,
         }
         response = HttpResponse(
-            content_type='application/pdf',
+            content_type=CONTENT_TYPE,
             headers={
                 'Content-Disposition':
                     'attachment; '

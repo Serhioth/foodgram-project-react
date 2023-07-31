@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1s0r=y#_w(s9inw^4twg$p#)6ksof130l8=h7tly#64h$_f#4i'
+SECRET_KEY = os.getenv('DJANGO_SECRET', 'unsafe-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG_SETTINGS')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
 
 
 # Application definition
@@ -152,3 +152,11 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 10
 }
+
+MIN_INGREDIENTS = 3
+MAX_INGREDIENTS = 10
+MIN_COOKING_TIME = 5
+MAX_COOKING_TIME = 720
+MIN_AMOUNT = 1
+MAX_AMOUNT = 10000
+CONTENT_TYPE='application/pdf'

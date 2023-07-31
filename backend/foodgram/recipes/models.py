@@ -1,5 +1,11 @@
 from django.contrib import auth
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
+from foodgram.settings import (MIN_COOKING_TIME,
+                               MAX_COOKING_TIME,
+                               MIN_AMOUNT,
+                               MAX_AMOUNT)
 
 User = auth.get_user_model()
 
@@ -40,6 +46,9 @@ class Tag(models.Model):
         help_text='Slug'
     )
 
+    class Meta:
+        unique_together = ('name', 'color')
+
     def __str__(self) -> str:
         return self.name
 
@@ -69,12 +78,11 @@ class Recipe(models.Model):
         related_name='shopping_cart',
         help_text='Users added to cart'
     )
-    tags = models.ForeignKey(
-        Tag,
-        null=True,
+    tags = models.ManyToManyField(
+        'recipes.Tag',
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name='tagged_recipes'
+        related_name='tagged_recipes',
+        help_text='Recipes tags'
     )
     name = models.CharField(
         'Recipe Name',
@@ -89,10 +97,25 @@ class Recipe(models.Model):
     text = models.TextField(
         'Recipe description'
     )
-    cooking_time = models.PositiveIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         'Time of cooking',
+        validators=(
+            MinValueValidator(
+                limit_value=MIN_COOKING_TIME,
+                message='Время готовки не может быть '
+                        f'меньше, чем {MIN_COOKING_TIME}'
+            ),
+            MaxValueValidator(
+                limit_value=MAX_COOKING_TIME,
+                message='Время готовки не может быть '
+                        f'больше, чем {MAX_COOKING_TIME}'
+            )
+        ),
         help_text='Time of cooking'
     )
+
+    class Meta:
+        unique_together = ('author', 'name')
 
 
 class IngredientAmount(models.Model):
@@ -106,8 +129,20 @@ class IngredientAmount(models.Model):
         on_delete=models.CASCADE,
         related_name='recipe_ingredients'
     )
-    amount = models.PositiveBigIntegerField(
+    amount = models.PositiveSmallIntegerField(
         'Amount of ingredient',
+        validators=(
+            MinValueValidator(
+                limit_value=MIN_AMOUNT,
+                message='Количество ингредиента не может быть '
+                        f'меньше, чем {MIN_AMOUNT}'
+            ),
+            MaxValueValidator(
+                limit_value=MAX_AMOUNT,
+                message='Количество ингредиента не может быть '
+                        f'больше, чем {MAX_AMOUNT}'
+            )
+        ),
         help_text='Amount',
     )
 

@@ -4,6 +4,7 @@ import webcolors
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
+from foodgram.settings import MIN_INGREDIENTS, MAX_INGREDIENTS
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
 
@@ -63,17 +64,46 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Recipe model serializer"""
+    name = serializers.CharField(max_length=200)
     image = Base64ImageField()
     author = UserSerializer(read_only=True)
     tags = TagSerializer(read_only=True)
+    cooking_time = serializers.IntegerField()
     ingredients = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
+        validators = (
+            serializers.UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('author', 'name'),
+                message='У Вас может быть только один рецепт с таким названием'
+            ),
+        )
         fields = '__all__'
 
     def get_ingredients(self, recipe):
         ingredients = recipe.ingredients.all()
+        num_of_ingredients = ingredients.count()
+
+        if num_of_ingredients <= MIN_INGREDIENTS:
+            raise serializers.ValidationError(
+                'Рецепт должен содержать хотя бы '
+                f'{MIN_INGREDIENTS} ингредиента'
+            )
+        elif num_of_ingredients >= MAX_INGREDIENTS:
+            raise serializers.ValidationError(
+                'Рецепт не может содержать '
+                f'больше чем {MAX_INGREDIENTS}'
+                'ингредиентов'
+            )
+
+        ingredient_ids = [ingredient.id for ingredient in ingredients]
+        if len(ingredient_ids) != num_of_ingredients:
+            raise serializers.ValidationError(
+                'Ингредиенты не должны повторяться!'
+            )
+
         serialized_ingredients = IngredientSerializer(
             ingredients,
             many=True
@@ -84,3 +114,13 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredient=ingredient
             ).amount
         return serialized_ingredients
+
+    def validate_cooking_time(self, value):
+        if 0 <= value <= 720:
+            return value
+        return serializers.ValidationError(
+            'Время готовки не может быть меньше нуля, '
+            'если на приготовление Вашего рецепта '
+            'действительно нужно больше 12 часов - '
+            'обратитесь к администрации сайта',
+        )

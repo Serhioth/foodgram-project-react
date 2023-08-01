@@ -7,12 +7,11 @@ dotenv.load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('DJANGO_SECRET') 
+SECRET_KEY = os.getenv('DJANGO_SECRET')
 
 DEBUG = os.getenv('DEBUG_SETTINGS') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
-
 
 
 INSTALLED_APPS = [

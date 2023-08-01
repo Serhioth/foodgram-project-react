@@ -47,7 +47,12 @@ class Tag(models.Model):
     )
 
     class Meta:
-        unique_together = ('name', 'color')
+        constraints = (
+            models.UniqueConstraint(
+                fields=('name', 'color'),
+                name='unique_name_color'
+            ),
+        )
 
     def __str__(self) -> str:
         return self.name
@@ -102,20 +107,25 @@ class Recipe(models.Model):
         validators=(
             MinValueValidator(
                 limit_value=MIN_COOKING_TIME,
-                message='Время готовки не может быть '
-                        f'меньше, чем {MIN_COOKING_TIME}'
+                message='Cooking time should not be '
+                        f'less than {MIN_COOKING_TIME}.'
             ),
             MaxValueValidator(
                 limit_value=MAX_COOKING_TIME,
-                message='Время готовки не может быть '
-                        f'больше, чем {MAX_COOKING_TIME}'
+                message='Cooking time should not be '
+                        f'more than {MAX_COOKING_TIME}.'
             )
         ),
         help_text='Time of cooking'
     )
 
     class Meta:
-        unique_together = ('author', 'name')
+        constraints = (
+            models.UniqueConstraint(
+                fields=('name', 'author'),
+                name='unique_recipe_name_author'
+            ),
+        )
 
 
 class IngredientAmount(models.Model):
@@ -134,13 +144,13 @@ class IngredientAmount(models.Model):
         validators=(
             MinValueValidator(
                 limit_value=MIN_AMOUNT,
-                message='Количество ингредиента не может быть '
-                        f'меньше, чем {MIN_AMOUNT}'
+                message='Amount of ingredient should not be '
+                        f'less than {MIN_AMOUNT}.'
             ),
             MaxValueValidator(
                 limit_value=MAX_AMOUNT,
-                message='Количество ингредиента не может быть '
-                        f'больше, чем {MAX_AMOUNT}'
+                message='Amount of ingredient should not be '
+                        f'more than {MAX_AMOUNT}.'
             )
         ),
         help_text='Amount',

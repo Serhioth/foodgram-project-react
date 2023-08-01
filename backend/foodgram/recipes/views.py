@@ -11,13 +11,13 @@ from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from foodgram.settings import CONTENT_TYPE
 from recipes.filters import RecipeFilter
 from recipes.models import Recipe, Tag
 from recipes.renderers import PdfRenderer
 from recipes.serializers import RecipeSerializer, TagSerializer
 
 dotenv.load_dotenv()
+CONTENT_TYPE = 'application/pdf'
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -83,7 +83,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             if recipe in user.shopping_cart.all():
                 return Response(
-                    {'message': 'Recipe already in shopping cart'}
+                    {'message': 'Recipe already in shopping cart.'}
                 )
 
             user.shopping_cart.add(recipe)
@@ -100,7 +100,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         if recipe not in user.shopping_cart.all():
             return Response(
-                {'message': 'Not in shopping cart'}
+                {'message': 'Not in shopping cart.'}
             )
 
         request.user.shopping_cart.remove(recipe)
@@ -121,7 +121,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             if recipe in user.favorited.recipes.all():
                 return Response(
-                    {'message': 'Already in your favorites'}
+                    {'message': 'Already in your favorites.'}
                 )
 
             user.favorited_recipes.add(recipe)
@@ -138,7 +138,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         if recipe not in user.favorited_recipes.all():
             return Response(
-                {'message': 'Not favorited'}
+                {'message': 'Not favorited.'}
             )
 
         user.favorited_recipes.remove(recipe)

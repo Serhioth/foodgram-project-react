@@ -54,18 +54,14 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def edit_subscribes(self, request, pk=None):
-
         user = request.user
-
         subscribe = get_object_or_404(User, pk=pk)
 
         if request.method == 'POST':
-
             if subscribe in user.subscribes.all():
                 return Response(
-                    {'message': 'Already subscribed'}
+                    {'message': 'Already subscribed.'}
                 )
-
             user.subscribes.add(subscribe)
             serializer = SubscriptionsSerializer(
                 subscribe,
@@ -76,9 +72,10 @@ class CustomUserViewSet(UserViewSet):
             return Response(
                 serializer.data, status=HTTPStatus.CREATED
             )
+
         if subscribe not in user.subscribes.all():
             return Response(
-                {'message': 'Not subscribed'}
+                {'message': 'Not subscribed.'}
             )
 
         user.subscribes.remove(subscribe)

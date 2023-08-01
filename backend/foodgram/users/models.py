@@ -8,10 +8,10 @@ class User(AbstractUser):
     subscribes = models.ManyToManyField('self', blank=True, symmetrical=False)
 
     email = models.EmailField(
-        'Почта',
+        'Email',
         unique=True,
         max_length=254,
-        help_text='Почта пользователя'
+        help_text='User email'
     )
 
     USERNAME_FIELD = 'email'

@@ -6,6 +6,25 @@ from django.db.models.functions import Cast
 from xhtml2pdf import pisa
 
 
+PATH_TO_CSS = Path('recipes/fonts/font.css').resolve()
+
+HTML_TEMPLATE = """
+    <!DOCTYPE html>
+    <html lang="ru">
+      <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="{path_to_css}">
+      </head>
+    <body>
+      <h1 style="font-family: 'MyCustomFont';">Ваш список покупок:</h1>
+        <ul style="font-family: 'MyCustomFont';">
+          {list_to_string}
+        </ul>
+      </body>
+    </html>
+    """
+
+
 def make_pdf(user):
     """Function, what creates pdf-file from sql-data"""
     carted_recipes = user.shopping_cart.all()
@@ -32,26 +51,19 @@ def make_pdf(user):
         formatted_list.append(formatted_string)
 
     list_to_string = ''.join(formatted_list)
-    path_to_font = Path('recipes/fonts/font.css').resolve()
 
-    html = f"""
-    <!DOCTYPE html>
-    <html lang="ru">
-      <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="{path_to_font}">
-      </head>
-    <body>
-      <h1 style="font-family: 'MyCustomFont';">Ваш список покупок:</h1>
-        <ul style="font-family: 'MyCustomFont';">
-          {list_to_string}
-        </ul>
-      </body>
-    </html>
-    """
+    formatted_html_tenplate = HTML_TEMPLATE.format(
+        path_to_css=PATH_TO_CSS,
+        list_to_string=list_to_string
+    )
 
     buffer = BytesIO()
-    pisa.CreatePDF(html.encode('utf-8'), buffer, encoding='utf-8')
+    pisa.CreatePDF(
+        formatted_html_tenplate.encode('utf-8'),
+        buffer,
+        encoding='utf-8'
+    )
+
     pdf = buffer.getvalue()
     buffer.close()
 

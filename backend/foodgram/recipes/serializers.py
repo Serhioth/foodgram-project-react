@@ -1,37 +1,14 @@
-import base64
-
-import webcolors
-from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from foodgram.settings import MIN_INGREDIENTS, MAX_INGREDIENTS
+from foodgram.settings import (MIN_INGREDIENTS,
+                               MAX_INGREDIENTS,
+                               MIN_COOKING_TIME,
+                               MAX_COOKING_TIME,
+                               MIN_AMOUNT,
+                               MAX_AMOUNT)
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
+from recipes.serializer_fields import Hex2NameColor, Base64ImageField
 from users.serializers import UserSerializer
-
-
-class Hex2NameColor(serializers.Field):
-    """Class to represent HEXCode to color name"""
-    def to_representation(self, value):
-        return value
-
-    def to_internal_value(self, data):
-        try:
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError('Для этого цвета нет имени')
-        return data
-
-
-class Base64ImageField(serializers.ImageField):
-    """Custom field to convert image to Base64 byte-string"""
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -77,7 +54,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             serializers.UniqueTogetherValidator(
                 queryset=model.objects.all(),
                 fields=('author', 'name'),
-                message='У Вас может быть только один рецепт с таким названием'
+                message='You can have only one recipe with such title.'
             ),
         )
         fields = '__all__'
@@ -88,20 +65,20 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         if num_of_ingredients <= MIN_INGREDIENTS:
             raise serializers.ValidationError(
-                'Рецепт должен содержать хотя бы '
-                f'{MIN_INGREDIENTS} ингредиента'
+                'Recipe must contain  at least '
+                f'{MIN_INGREDIENTS} ingredients.'
             )
-        elif num_of_ingredients >= MAX_INGREDIENTS:
+        if num_of_ingredients >= MAX_INGREDIENTS:
             raise serializers.ValidationError(
-                'Рецепт не может содержать '
-                f'больше чем {MAX_INGREDIENTS}'
-                'ингредиентов'
+                'Recipe must contain '
+                f'no more than {MAX_INGREDIENTS} '
+                'ingredients.'
             )
 
         ingredient_ids = [ingredient.id for ingredient in ingredients]
         if len(ingredient_ids) != num_of_ingredients:
             raise serializers.ValidationError(
-                'Ингредиенты не должны повторяться!'
+                'Ingredients should not be repeated.'
             )
 
         serialized_ingredients = IngredientSerializer(
@@ -109,18 +86,26 @@ class RecipeSerializer(serializers.ModelSerializer):
             many=True
         ).data
         for i, ingredient in enumerate(ingredients):
-            serialized_ingredients[i]['amount'] = IngredientAmount.objects.get(
+            amount = IngredientAmount.objects.get(
                 recipe=recipe,
                 ingredient=ingredient
             ).amount
+            if MIN_AMOUNT <= amount <= MAX_AMOUNT:
+                raise serializers.ValidationError(
+                    f'Amount of ingredient {ingredient.name} '
+                    f'should not be less than {MIN_AMOUNT} '
+                    f'and more then {MAX_AMOUNT}.'
+                )
+            serialized_ingredients[i]['amount'] = amount
         return serialized_ingredients
 
     def validate_cooking_time(self, value):
-        if 0 <= value <= 720:
+        if MIN_COOKING_TIME <= value <= MAX_COOKING_TIME:
             return value
         return serializers.ValidationError(
-            'Время готовки не может быть меньше нуля, '
-            'если на приготовление Вашего рецепта '
-            'действительно нужно больше 12 часов - '
-            'обратитесь к администрации сайта',
+            'Time of cooking should not be, '
+            f'less than {MIN_COOKING_TIME}. '
+            'If cooking of your dishes'
+            f'require more time than {MAX_COOKING_TIME}'
+            'please contact site administration.',
         )

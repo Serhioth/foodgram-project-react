@@ -1,7 +1,9 @@
 from rest_framework.renderers import BaseRenderer
 
-from foodgram.settings import CONTENT_TYPE
 from recipes.shopping_cart import make_pdf
+
+
+CONTENT_TYPE = 'application/pdf'
 
 
 class PdfRenderer(BaseRenderer):

@@ -3,6 +3,7 @@ from datetime import datetime
 import dotenv
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -54,7 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def download_shopping_cart(self, request):
-        now = datetime.now()
+        now = timezone.now()
         time = now.strftime('%Y-%m-%d')
         pdf_data = {
             'user': request.user,

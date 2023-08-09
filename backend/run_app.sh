@@ -1,4 +1,6 @@
-cd foodgram || exit
+#!/bin/sh
+cd ./foodgram || exit
+python manage.py makemigrations;
 python manage.py migrate;
-python manage.py coolectstatic --noinput;
-gunicorn -b 0:8000 foodgram.wsgi
+python manage.py collectstatic --noinput;
+gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000;

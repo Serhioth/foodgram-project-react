@@ -6,44 +6,55 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
-from recipes.filters import RecipeFilter
-from recipes.models import Recipe, Tag
+from recipes.filters import RecipeFilter, IngredientFilter
+from recipes.models import Recipe, Tag, Ingredient
+from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from recipes.renderers import PdfRenderer
-from recipes.serializers import RecipeSerializer, TagSerializer
+from recipes.serializers import (RecipeSerializer,
+                                 CreateRecipeSerializer,
+                                 TagSerializer,
+                                 IngredientSerializer)
 
 dotenv.load_dotenv()
 CONTENT_TYPE = 'application/pdf'
 
 
-class TagViewSet(viewsets.ModelViewSet):
-    """Viewset for tags"""
-    permission_classes = (
-        IsAdminUser,
-    )
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    http_method_names = ('get', )
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('slug', )
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Viewset for /recipes, /shopping_cart and /favorites"""
     permission_classes = (
-        IsAuthenticatedOrReadOnly,
-        IsAdminUser
+        IsAuthorOrReadOnly | IsAdminOrReadOnly
     )
     queryset = Recipe.objects.all()
     pagination_class = LimitOffsetPagination
-    serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filter_class = RecipeFilter
     ordering_fields = ('created_at', 'updated_at')
     http_method_names = ('get', 'post', 'patch', 'delete')
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return RecipeSerializer
+        return CreateRecipeSerializer
 
     @action(
         methods=('GET', ),

@@ -14,7 +14,7 @@ class Ingredient(models.Model):
     """Model for ingredients"""
     name = models.CharField(
         'Ingredient name',
-        max_length=50,
+        max_length=200,
         help_text='Ingredient name'
     )
     measurement_unit = models.CharField(

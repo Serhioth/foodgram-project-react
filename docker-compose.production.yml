@@ -1,0 +1,45 @@
+version: '3.3'
+name: foodgram_prod
+
+volumes:
+  pg_data:
+  static_dir:
+  media_dir:
+
+services:
+  db:
+    image: postgres:13.0-alpine
+    restart: always
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    image: serhioth/foodgram_backend
+    env_file: .env
+    restart: always
+    volumes:
+      - static_dir:/app/static/
+      - media_dir:/app/media/
+    depends_on:
+      - db
+  
+  frontend:
+    image: serhioth/foodgram_frontend
+    env_file: .env
+    volumes:
+      - ../frontend/:/app/result_build/
+  
+  nginx:
+    image: nginx:1.19.3
+    volumes:
+      - ./local_nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
+    depends_on:
+      - backend
+      - frontend
+      - db
+    ports:
+      - "80:80"
+      - "443:443"

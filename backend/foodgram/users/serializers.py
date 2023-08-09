@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from recipes.models import Recipe
 from recipes.serializer_fields import Base64ImageField
+from users.validators import check_username, check_user_is_not_registred
 
 User = get_user_model()
 
@@ -29,7 +30,44 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
+            'password'
         )
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'is_subscribed': {'read_only': True}
+        }
+
+    def validate_username(self, value):
+        """Checking that the username meets the registration requirements"""
+        if not check_username(value):
+            raise serializers.ValidationError(
+                {'message':
+                    'The username should not be Me, '
+                    'contains invalid characters, '
+                    'or exceeds the allowed length of 150 characters'}
+            )
+        return value
+
+    def validate(self, attrs):
+        """
+       Checking that user does not
+       register with already taken mailbox or usename
+        """
+        email = attrs.get('email')
+        username = attrs.get('username')
+        if not check_user_is_not_registred(
+            email=email,
+            username=username
+        ):
+            raise serializers.ValidationError(
+                {'message':
+                 f'User with such username - {username} '
+                 f'or mailbox - {email} allready registred'}
+            )
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
 
     def get_is_subscribed(self, object):
 
@@ -58,9 +96,9 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
         )
 
     def get_recipes(self, object):
-        limit = self.context.get('limit', None)
-        if limit:
-            recipes = object.recipes.all()[:limit]
+        limit = self.context.get('recipes_limit', None)
+        if limit and limit.isdigit():
+            recipes = object.recipes.all()[:int(limit)]
         else:
             recipes = object.recipes.all()
         recipes = UserRecipeSerializer(

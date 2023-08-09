@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework.authtoken',
     'djoser',
+    'api',
+    'foodgram',
     'users',
     'recipes'
 ]
@@ -99,8 +101,8 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'collected_static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -124,3 +126,5 @@ MIN_COOKING_TIME = 1
 MAX_COOKING_TIME = 720
 MIN_AMOUNT = 1
 MAX_AMOUNT = 10000
+MIN_TAGS = 1
+MAX_TAGS = 3

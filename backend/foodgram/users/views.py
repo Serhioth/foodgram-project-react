@@ -23,6 +23,7 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
+    http_method_names = ('get', 'post')
 
     @action(
         methods=('GET', ),

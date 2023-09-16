@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET')
 
 DEBUG = os.getenv('DEBUG_SETTINGS') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -41,6 +41,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -102,7 +106,10 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'collected_static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -119,6 +126,8 @@ REST_FRAMEWORK = {
         'rest_framework.pagination.LimitOffsetPagination',
         'PAGE_SIZE': 10
 }
+
+CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1']
 
 MIN_INGREDIENTS = 1
 MAX_INGREDIENTS = 10

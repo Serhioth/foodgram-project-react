@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class UserRecipeSerializer(serializers.ModelSerializer):
-    """This serializer is necessary to prevent recircular import"""
+    """This serializer is necessary to prevent recircular import. """
     image = Base64ImageField()
 
     class Meta:
@@ -18,7 +18,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer for User model"""
+    """Serializer for User model. """
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -38,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def validate_username(self, value):
-        """Checking that the username meets the registration requirements"""
+        """Checking that the username meets the registration requirements. """
         if not check_username(value):
             raise serializers.ValidationError(
                 {'message':
@@ -51,7 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         """
        Checking that user does not
-       register with already taken mailbox or usename
+       register with already taken mailbox or usename.
         """
         email = attrs.get('email')
         username = attrs.get('username')
@@ -78,7 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionsSerializer(serializers.ModelSerializer):
-    """Serializer for subscriptions"""
+    """Serializer for subscriptions. """
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 

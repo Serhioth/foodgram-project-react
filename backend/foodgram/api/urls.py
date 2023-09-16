@@ -1,19 +1,18 @@
 from django.urls import include, path
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import DefaultRouter
 
-from recipes.views import RecipeViewSet, TagViewSet
+from recipes.views import RecipeViewSet, TagViewSet, IngredientViewSet
 from users.views import CustomUserViewSet
 
 app_name = 'api'
 
-router = SimpleRouter()
+router = DefaultRouter()
 
 router.register(
     r'users',
     CustomUserViewSet,
     basename='CustomUser-viewset'
 )
-
 router.register(
     r'recipes',
     RecipeViewSet,
@@ -23,6 +22,11 @@ router.register(
     r'tags',
     TagViewSet,
     basename='Tag-viewset'
+)
+router.register(
+    r'ingredients',
+    IngredientViewSet,
+    basename='Ingredient-viewset'
 )
 
 urlpatterns = [

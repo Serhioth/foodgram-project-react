@@ -1,6 +1,12 @@
 from django.contrib import admin
+from django.contrib.admin import display
 
-from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
+from .models import (
+    Ingredient,
+    IngredientAmount,
+    Recipe,
+    Tag
+)
 
 
 class IngredientAmountInline(admin.TabularInline):
@@ -15,17 +21,28 @@ class IngredientAmountInline(admin.TabularInline):
     ingredient_measurement_unit.short_description = 'unit'
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author')
-    list_filter = ('name', 'author', 'tags')
+    list_display = ('name', 'id', 'author')
+    list_filter = ('author', 'name', 'tags',)
     inlines = (IngredientAmountInline, )
 
+    @display(description='Favorited')
+    def added_in_favorites(self, obj):
+        return obj.favorited.all().count()
 
+
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit')
+    list_display = ('name', 'measurement_unit',)
+    list_filter = ('name',)
 
 
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Tag)
-admin.site.register(IngredientAmount)
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'color', 'slug',)
+
+
+@admin.register(IngredientAmount)
+class IngrdientAmount(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient', 'amount',)

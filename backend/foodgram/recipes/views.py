@@ -6,15 +6,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from recipes.filters import RecipeFilter, IngredientFilter
 from recipes.models import Recipe, Tag, Ingredient
 from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from recipes.renderers import PdfRenderer
-from recipes.serializers import (RecipeSerializer,
-                                 CreateRecipeSerializer,
+from recipes.serializers import (CreateRecipeSerializer,
                                  TagSerializer,
                                  IngredientSerializer)
 
@@ -23,38 +22,40 @@ CONTENT_TYPE = 'application/pdf'
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """Ingredient model viewset. """
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
+    pagination_class = None
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """Tag model viewset. """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    """Viewset for /recipes, /shopping_cart and /favorites"""
+    """Viewset for /recipes, /shopping_cart and /favorites. """
     permission_classes = (
-        IsAuthorOrReadOnly | IsAdminOrReadOnly
+        IsAuthorOrReadOnly | IsAdminOrReadOnly,
     )
     queryset = Recipe.objects.all()
+    serializer_class = CreateRecipeSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filter_class = RecipeFilter
     ordering_fields = ('created_at', 'updated_at')
     http_method_names = ('get', 'post', 'patch', 'delete')
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
-            return RecipeSerializer
-        return CreateRecipeSerializer
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     @action(
         methods=('GET', ),
@@ -102,7 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {
                     'id': recipe.id,
                     'name': recipe.name,
-                    'image': recipe.image,
+                    'image': str(bytes(recipe.image.read())),
                     'cooking_time': recipe.cooking_time
                 },
                 status=status.HTTP_201_CREATED

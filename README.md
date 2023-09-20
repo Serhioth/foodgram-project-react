@@ -34,7 +34,7 @@ Example of project you can see [here](https://foodgram-serhioth.ddns.net/).
 
 **How to set up project on your own server:**
 
-1. Install Docker and Docker-compose to yours server (instructions here)
+1. Install Docker and Docker-compose to yours server (instructions [here](https://docs.docker.com/engine/install/))
 2. Clone the repository to yours server
 3. Into directory foodgram-project-react/backend/ you will find run\_app.sh
 4. This is script for preconfiguring of backend container, it premading default superuser, don't forget to change its data to desired

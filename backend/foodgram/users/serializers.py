@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
-
 from recipes.models import Recipe
 from recipes.serializer_fields import Base64ImageField
-from users.validators import check_username, check_user_is_not_registred
+from rest_framework import serializers
+from users.validators import check_user_is_not_registred, check_username
 
 User = get_user_model()
 
@@ -33,8 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
             'password'
         )
         extra_kwargs = {
-            'password': {'write_only': True},
-            'is_subscribed': {'read_only': True}
+            'password': {'write_only': True}
         }
 
     def validate_username(self, value):
@@ -71,16 +69,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, object):
 
-        return object.username in self.context.get(
+        return object in self.context.get(
             'request',
             None
-        ).user.get_subscribes()
+        ).user.subscribes.all()
 
 
 class SubscriptionsSerializer(serializers.ModelSerializer):
     """Serializer for subscriptions. """
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -109,3 +108,10 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, object):
         return object.recipes.all().count()
+
+    def get_is_subscribed(self, object):
+
+        return object in self.context.get(
+            'request',
+            None
+        ).user.subscribes.all()

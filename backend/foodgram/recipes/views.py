@@ -3,19 +3,17 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.filters import IngredientFilter, RecipeFilter
+from recipes.models import Ingredient, Recipe, Tag
+from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from recipes.renderers import PdfRenderer
+from recipes.serializers import (CreateRecipeSerializer, IngredientSerializer,
+                                 TagSerializer)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from recipes.filters import RecipeFilter, IngredientFilter
-from recipes.models import Recipe, Tag, Ingredient
-from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from recipes.renderers import PdfRenderer
-from recipes.serializers import (CreateRecipeSerializer,
-                                 TagSerializer,
-                                 IngredientSerializer)
 
 dotenv.load_dotenv()
 CONTENT_TYPE = 'application/pdf'
@@ -130,7 +128,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
 
         if request.method == 'POST':
-            if recipe in user.favorited.recipes.all():
+            if recipe in user.favorited_recipes.all():
                 return Response(
                     {'message': 'Already in your favorites.'}
                 )

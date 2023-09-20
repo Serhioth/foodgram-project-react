@@ -5,7 +5,6 @@ from django.db.models import CharField, Sum
 from django.db.models.functions import Cast
 from xhtml2pdf import pisa
 
-
 PATH_TO_CSS = Path('recipes/fonts/font.css').resolve()
 
 HTML_TEMPLATE = """
@@ -30,12 +29,12 @@ def make_pdf(user):
     carted_recipes = user.shopping_cart.all()
 
     ingredient_list = carted_recipes.values(
-        'ingredientamount__ingredient__name',
-        'ingredientamount__ingredient__measurement_unit'
+        'recipe_ingredients__ingredient__name',
+        'recipe_ingredients__ingredient__measurement_unit'
     )
     ingredient_list_amount = ingredient_list.annotate(
         formatted_decimal=Cast(
-            Sum('ingredientamount__amount'),
+            Sum('recipe_ingredients__amount'),
             CharField(max_length=10)
         ),
     )
@@ -44,9 +43,9 @@ def make_pdf(user):
 
     for amounts in ingredient_list_amount:
         formatted_string = f"""
-            <li> {amounts['ingredientamount__ingredient__name']}
+            <li> {amounts['recipe_ingredients__ingredient__name']}
             - {amounts['formatted_decimal']}
-            {amounts['ingredientamount__ingredient__measurement_unit']} </li>
+            {amounts['recipe_ingredients__ingredient__measurement_unit']} </li>
             """
         formatted_list.append(formatted_string)
 

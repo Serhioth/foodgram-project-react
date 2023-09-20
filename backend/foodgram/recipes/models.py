@@ -1,13 +1,10 @@
 from django.contrib import auth
-from django.core.validators import (MinValueValidator,
-                                    MaxValueValidator,
+from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
 
-from foodgram.settings import (MIN_COOKING_TIME,
-                               MAX_COOKING_TIME,
-                               MIN_AMOUNT,
-                               MAX_AMOUNT)
+from foodgram.settings import (MAX_AMOUNT, MAX_COOKING_TIME, MIN_AMOUNT,
+                               MIN_COOKING_TIME)
 
 User = auth.get_user_model()
 

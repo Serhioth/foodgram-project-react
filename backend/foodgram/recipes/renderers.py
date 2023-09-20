@@ -1,7 +1,5 @@
-from rest_framework.renderers import BaseRenderer
-
 from recipes.shopping_cart import make_pdf
-
+from rest_framework.renderers import BaseRenderer
 
 CONTENT_TYPE = 'application/pdf'
 

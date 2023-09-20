@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
-
 from recipes.models import Recipe
 from recipes.serializer_fields import Base64ImageField
-from users.validators import check_username, check_user_is_not_registred
+from rest_framework import serializers
+from users.validators import check_user_is_not_registred, check_username
 
 User = get_user_model()
 

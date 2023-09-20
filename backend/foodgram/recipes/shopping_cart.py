@@ -5,7 +5,6 @@ from django.db.models import CharField, Sum
 from django.db.models.functions import Cast
 from xhtml2pdf import pisa
 
-
 PATH_TO_CSS = Path('recipes/fonts/font.css').resolve()
 
 HTML_TEMPLATE = """

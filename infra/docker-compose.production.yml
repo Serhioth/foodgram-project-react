@@ -3,9 +3,9 @@ name: foodgram_dev
 
 services:
   db:
-    image: postgres:13.10
+    image: postgres:13.0-alpine
     restart: always
-    env_file: .env
+    env_file: ../backend/.env
     volumes:
       - pg_data: /var/lib/postgresql/data
 
@@ -19,7 +19,7 @@ services:
     - media_dir: /app/media/
     - ../backend/foodgram:/app/foodgram
     env_file:
-      - .env
+      - ./.env
     ports:
       -"8000:8000"
     depends_on:

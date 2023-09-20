@@ -1,5 +1,7 @@
 from django.contrib import auth
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (MinValueValidator,
+                                    MaxValueValidator,
+                                    RegexValidator)
 from django.db import models
 
 from foodgram.settings import (MIN_COOKING_TIME,
@@ -11,10 +13,11 @@ User = auth.get_user_model()
 
 
 class Ingredient(models.Model):
-    """Model for ingredients"""
+    """Model for ingredients."""
     name = models.CharField(
         'Ingredient name',
-        max_length=50,
+        max_length=200,
+        db_index=True,
         help_text='Ingredient name'
     )
     measurement_unit = models.CharField(
@@ -23,30 +26,52 @@ class Ingredient(models.Model):
         help_text='Measurement unit'
     )
 
+    class Meta:
+        verbose_name = 'Ingredient'
+        verbose_name_plural = 'Ingredients'
+        ordering = ('name',)
+
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Tag(models.Model):
-    """Model for tags"""
+    """Model for tags. """
     name = models.CharField(
         'Tag name',
-        max_length=30,
+        max_length=50,
+        unique=True,
+        db_index=True,
         help_text='Tag'
     )
     color = models.CharField(
         'Tag color',
         max_length=16,
+        validators=[
+            RegexValidator(
+                regex=r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                message=(
+                    'The entered value is not a valid hexadecimal color code.'
+                )
+            )
+        ],
         help_text='Color'
     )
     slug = models.SlugField(
         'Tag slug',
-        max_length=30,
+        max_length=50,
         unique=True,
+        validators=[RegexValidator(
+            regex=r'^[-a-zA-Z0-9_]+$',
+            message='Slug containes invalid character.'
+        )],
         help_text='Slug'
     )
 
     class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+        ordering = ('name',)
         constraints = (
             models.UniqueConstraint(
                 fields=('name', 'color'),
@@ -66,10 +91,17 @@ class Recipe(models.Model):
         related_name='recipes',
         help_text='user recipes'
     )
+    pub_date = models.DateTimeField(
+        'Publication date',
+        auto_now_add=True,
+        db_index=True,
+        help_text='Recipe publication date'
+    )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientAmount',
-        help_text='Ingredients'
+        help_text='Ingredients',
+        related_name='recipes_ingredients'
     )
     favorited = models.ManyToManyField(
         'users.User',
@@ -120,6 +152,9 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Recipe'
+        verbose_name_plural = 'Recipes'
+        ordering = ('-pub_date',)
         constraints = (
             models.UniqueConstraint(
                 fields=('name', 'author'),
@@ -133,11 +168,12 @@ class IngredientAmount(models.Model):
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
+        related_name='recipe_ingredients'
     )
     ingredient = models.ForeignKey(
         'Ingredient',
         on_delete=models.CASCADE,
-        related_name='recipe_ingredients'
+        related_name='used_in_recipes'
     )
     amount = models.PositiveSmallIntegerField(
         'Amount of ingredient',
@@ -155,6 +191,17 @@ class IngredientAmount(models.Model):
         ),
         help_text='Amount',
     )
+
+    class Meta:
+        verbose_name = 'Ingredient amount'
+        verbose_name_plural = 'Ingredients amount'
+        ordering = ('id',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'ingredient'),
+                name='unique_recipe_ingredient'
+            ),
+        )
 
     def __str__(self) -> str:
         return f'{self.ingredient.name}: {self.amount}'

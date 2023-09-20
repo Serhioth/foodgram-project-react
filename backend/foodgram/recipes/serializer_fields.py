@@ -2,20 +2,6 @@ import base64
 
 from rest_framework import serializers
 from django.core.files.base import ContentFile
-import webcolors
-
-
-class Hex2NameColor(serializers.Field):
-    """Class to represent HEXCode to color name"""
-    def to_representation(self, value):
-        return value
-
-    def to_internal_value(self, data):
-        try:
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError('No title for such color.')
-        return data
 
 
 class Base64ImageField(serializers.ImageField):

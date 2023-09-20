@@ -17,12 +17,13 @@ User = get_user_model()
 class CustomUserViewSet(UserViewSet):
     """
     User model view-set,
-    support work with subscriptions endpoints
+    support work with subscriptions endpoints.
     """
     serializer_class = UserSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
+    http_method_names = ('get', 'post')
 
     @action(
         methods=('GET', ),

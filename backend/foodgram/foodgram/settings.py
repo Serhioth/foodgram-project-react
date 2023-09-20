@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET')
 
 DEBUG = os.getenv('DEBUG_SETTINGS') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split()
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework.authtoken',
     'djoser',
+    'api',
+    'foodgram',
     'users',
     'recipes'
 ]
@@ -39,6 +41,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -99,8 +105,11 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -118,9 +127,13 @@ REST_FRAMEWORK = {
         'PAGE_SIZE': 10
 }
 
+CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1']
+
 MIN_INGREDIENTS = 1
 MAX_INGREDIENTS = 10
 MIN_COOKING_TIME = 1
 MAX_COOKING_TIME = 720
 MIN_AMOUNT = 1
 MAX_AMOUNT = 10000
+MIN_TAGS = 1
+MAX_TAGS = 3

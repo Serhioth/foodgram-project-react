@@ -30,7 +30,7 @@ Example of project you can see [here](https://foodgram-serhioth.ddns.net/).
 - Gunicorn
 - Nginx
 - PostgreSQL
-- CI\CD
+- CI\CD (backend only)
 
 **How to set up project on your own server:**
 

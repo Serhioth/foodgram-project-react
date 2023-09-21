@@ -247,7 +247,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             ingredients_data = validated_data.pop('ingredients')
             for ingredient in ingredients_data:
                 ingredient_instance = Ingredient.objects.get(
-                    id=ingredient['ingredient_id']
+                    id=ingredient['id']
                 )
                 instance.ingredients.add(
                     ingredient_instance,

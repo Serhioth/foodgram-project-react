@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from api.serializers.users.serializers import (SubscriptionsSerializer,
+                                               UserSerializer)
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -8,9 +10,6 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from api.serializers.users.serializers import (SubscriptionsSerializer,
-                                               UserSerializer)
 
 User = get_user_model()
 

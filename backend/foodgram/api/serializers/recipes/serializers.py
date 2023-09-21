@@ -113,6 +113,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     )
     ingredients = IngredientAmountSerializer(many=True)
     image = Base64ImageField()
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Recipe

@@ -1,3 +1,4 @@
+from rest_framework.fields import empty
 from api.serializers.recipes.serializer_fields import Base64ImageField
 from api.serializers.users.serializers import UserSerializer
 from foodgram.settings import (MAX_AMOUNT, MAX_COOKING_TIME, MAX_INGREDIENTS,
@@ -107,6 +108,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True
     )
+    tags_objects = TagSerializer(many=True)
     author = UserSerializer(
         read_only=True,
         default=serializers.CurrentUserDefault()
@@ -121,6 +123,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'tags',
+            'tags_objects',
             'author',
             'ingredients',
             'name',
@@ -135,6 +138,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 message='You can have only one recipe with such title.'
             ),
         )
+
+    def __init__(self, *args, **kwargs):
+        super(CreateRecipeSerializer, self).__init__(*args, **kwargs)
+        request = self.context.get('request')
+        if request.method == 'PATCH':
+            self.fields['tags'] = self.fields.pop('tags_objects')
+        else:
+            self.fields.pop('tags_objects')
 
     def validate_ingredients(self, value):
         if not value:
@@ -177,7 +188,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return value
 
     def validate_tags(self, value):
-        tags = value
+        if self.context.get('request').method == 'POST':
+            tags = value
+        else:
+            tags = [Tag.objects.get(tag_id) for tag_id in value]
+
         num_of_tags = len(value)
 
         if num_of_tags < MIN_TAGS:

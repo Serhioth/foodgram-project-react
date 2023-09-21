@@ -246,12 +246,10 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
             ingredients_data = validated_data.pop('ingredients')
             for ingredient in ingredients_data:
-                ingredient_instance = Ingredient.objects.get(
-                    id=ingredient['id']
-                )
+                ingredient_instance = ingredient.get('ingredient')
                 instance.ingredients.add(
                     ingredient_instance,
-                    through_defaults={'amount': ingredient['amount']}
+                    through_defaults={'amount': ingredient.get('amount')}
                 )
 
         instance.save()

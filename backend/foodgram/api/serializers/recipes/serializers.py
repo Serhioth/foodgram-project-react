@@ -1,4 +1,3 @@
-from rest_framework.fields import empty
 from api.serializers.recipes.serializer_fields import Base64ImageField
 from api.serializers.users.serializers import UserSerializer
 from foodgram.settings import (MAX_AMOUNT, MAX_COOKING_TIME, MAX_INGREDIENTS,

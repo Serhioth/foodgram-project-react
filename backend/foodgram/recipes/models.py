@@ -2,6 +2,7 @@ from django.contrib import auth
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
+
 from foodgram.settings import (MAX_AMOUNT, MAX_COOKING_TIME, MIN_AMOUNT,
                                MIN_COOKING_TIME)
 

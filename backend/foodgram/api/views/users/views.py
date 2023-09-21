@@ -8,7 +8,9 @@ from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.serializers import SubscriptionsSerializer, UserSerializer
+
+from api.serializers.users.serializers import (SubscriptionsSerializer,
+                                               UserSerializer)
 
 User = get_user_model()
 

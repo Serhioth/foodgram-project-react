@@ -1,10 +1,11 @@
+from rest_framework import serializers
+
+from api.serializers.users.serializers import UserSerializer
 from foodgram.settings import (MAX_AMOUNT, MAX_COOKING_TIME, MAX_INGREDIENTS,
                                MAX_TAGS, MIN_AMOUNT, MIN_COOKING_TIME,
                                MIN_INGREDIENTS, MIN_TAGS)
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
-from recipes.serializer_fields import Base64ImageField
-from rest_framework import serializers
-from users.serializers import UserSerializer
+from api.serializers.recipes.serializer_fields import Base64ImageField
 
 
 class TagSerializer(serializers.ModelSerializer):

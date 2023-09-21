@@ -127,7 +127,7 @@ REST_FRAMEWORK = {
         'PAGE_SIZE': 10
 }
 
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://foodgram-serhioth.ddns.net']
 
 MIN_INGREDIENTS = 1
 MAX_INGREDIENTS = 10

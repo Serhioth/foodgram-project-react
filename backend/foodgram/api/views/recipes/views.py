@@ -119,7 +119,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        methods=('POST', 'DEL'),
+        methods=('POST', 'DELETE'),
         detail=True,
         url_path='favorite',
         permission_classes=(IsAuthenticated, )
@@ -130,7 +130,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
 
         if request.method == 'POST':
-            if recipe in user.favorited.recipes.all():
+            if recipe in user.favorited_recipes.all():
                 return Response(
                     {'message': 'Already in your favorites.'}
                 )

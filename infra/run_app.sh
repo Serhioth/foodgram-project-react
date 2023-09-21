@@ -8,4 +8,4 @@ echo "from django.contrib.auth import get_user_model; User = get_user_model(); U
     python manage.py shell
 echo "Superuser created successfully"
 python manage.py collectstatic --noinput;
-gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000;
+gunicorn foodgram.wsgi:application --bind 127.0.0.1:8000;

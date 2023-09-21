@@ -48,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = CreateRecipeSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    filter_class = RecipeFilter
+    filterset_class = RecipeFilter
     ordering_fields = ('created_at', 'updated_at')
     http_method_names = ('get', 'post', 'patch', 'delete')
 

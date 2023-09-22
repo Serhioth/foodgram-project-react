@@ -1,4 +1,3 @@
-import dotenv
 from api.serializers.recipes.filters import IngredientFilter, RecipeFilter
 from api.serializers.recipes.permissions import (IsAdminOrReadOnly,
                                                  IsAuthorOrReadOnly)
@@ -17,8 +16,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-dotenv.load_dotenv()
 CONTENT_TYPE = 'application/pdf'
+DATE_FORMAT = '%Y-%m-%d'
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -66,7 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         now = timezone.now()
-        time = now.strftime('%Y-%m-%d')
+        time = now.strftime(DATE_FORMAT)
         pdf_data = {
             'user': request.user,
         }

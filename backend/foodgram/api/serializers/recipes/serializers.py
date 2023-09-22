@@ -36,8 +36,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     def validate_amount(self, value):
         if value < MIN_AMOUNT or value > MAX_AMOUNT:
             raise serializers.ValidationError(
-                f"Amount of ingredient should not be less than {MIN_AMOUNT} "
-                f"and more than {MAX_AMOUNT}."
+                f'Amount of ingredient should not be less than {MIN_AMOUNT} '
+                f'and more than {MAX_AMOUNT}.'
             )
         return value
 
@@ -211,7 +211,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags')
-        ingredients_data = validated_data.pop("ingredients")
+        ingredients_data = validated_data.pop('ingredients')
 
         request = self.context.get('request')
         validated_data['author'] = request.user

@@ -43,24 +43,20 @@ class Tag(models.Model):
     color = models.CharField(
         'Tag color',
         max_length=16,
-        validators=[
+        validators=(
             RegexValidator(
                 regex=r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
                 message=(
                     'The entered value is not a valid hexadecimal color code.'
                 )
-            )
-        ],
+            ),
+        ),
         help_text='Color'
     )
     slug = models.SlugField(
         'Tag slug',
         max_length=50,
         unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Slug containes invalid character.'
-        )],
         help_text='Slug'
     )
 

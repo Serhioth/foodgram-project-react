@@ -10,8 +10,6 @@ def check_username(username):
     Проверка, что имя пользователя != me
     и соответствует regex шаблону
     """
-    if username.lower() == 'me':
-        return False
     pattern = r'^[\w.@+-]+'
     if not re.findall(pattern, username):
         return False

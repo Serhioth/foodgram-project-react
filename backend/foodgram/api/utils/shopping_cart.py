@@ -1,14 +1,9 @@
-import os
 from io import BytesIO
 
 from django.db.models import CharField, Sum
 from django.db.models.functions import Cast
+from foodgram.settings import PATH_TO_FONTS
 from xhtml2pdf import pisa
-
-current_directory = os.getcwd()
-PATH_TO_CSS = current_directory + '/api/utils/fonts/font.css'
-
-print(PATH_TO_CSS)
 
 HTML_TEMPLATE = """
     <!DOCTYPE html>
@@ -55,7 +50,7 @@ def make_pdf(user):
     list_to_string = ''.join(formatted_list)
 
     formatted_html_tenplate = HTML_TEMPLATE.format(
-        path_to_css=PATH_TO_CSS,
+        path_to_css=PATH_TO_FONTS,
         list_to_string=list_to_string
     )
 

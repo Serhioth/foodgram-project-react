@@ -7,8 +7,8 @@ User = get_user_model()
 
 def check_username(username):
     """
-    Проверка, что имя пользователя != me
-    и соответствует regex шаблону
+    Проверка, что имя пользователя
+    соответствует regex шаблону
     """
     pattern = r'^[\w.@+-]+'
     if not re.findall(pattern, username):

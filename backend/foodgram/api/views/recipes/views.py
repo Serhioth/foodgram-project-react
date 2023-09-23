@@ -1,3 +1,13 @@
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from api.serializers.recipes.filters import IngredientFilter, RecipeFilter
 from api.serializers.recipes.permissions import (IsAdminOrReadOnly,
                                                  IsAuthorOrReadOnly)
@@ -5,18 +15,9 @@ from api.serializers.recipes.renderers import PdfRenderer
 from api.serializers.recipes.serializers import (CreateRecipeSerializer,
                                                  IngredientSerializer,
                                                  TagSerializer)
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-from django_filters.rest_framework import DjangoFilterBackend
+from api.serializers.recipes.renderers import CONTENT_TYPE
 from recipes.models import Ingredient, Recipe, Tag
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
-CONTENT_TYPE = 'application/pdf'
 DATE_FORMAT = '%Y-%m-%d'
 
 
@@ -72,10 +73,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(
             content_type=CONTENT_TYPE,
             headers={
-                'Content-Disposition':
-                    'attachment; '
-                    'filename="shopping_list'
-                    f'_{time}_{request.user.username}.pdf"'}
+                'Content-Disposition': ('attachment; '
+                                        'filename="shopping_list'
+                                        f'_{time}_'
+                                        f'{request.user.username}.pdf"')}
         )
         response.write(PdfRenderer().render(pdf_data))
         return response
@@ -140,7 +141,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {
                     'id': recipe.id,
                     'name': recipe.name,
-                    'image': str(bytes(recipe.image.read())),
+                    'image': recipe.image.read().decode(),
                     'cooking_time': recipe.cooking_time
                 },
                 status=status.HTTP_201_CREATED

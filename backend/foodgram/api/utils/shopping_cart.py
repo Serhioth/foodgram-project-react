@@ -2,8 +2,9 @@ from io import BytesIO
 
 from django.db.models import CharField, Sum
 from django.db.models.functions import Cast
-from foodgram.settings import PATH_TO_FONTS
 from xhtml2pdf import pisa
+
+from foodgram.settings import PATH_TO_FONTS
 
 HTML_TEMPLATE = """
     <!DOCTYPE html>

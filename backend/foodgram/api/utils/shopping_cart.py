@@ -4,7 +4,8 @@ from django.db.models import CharField, Sum
 from django.db.models.functions import Cast
 from xhtml2pdf import pisa
 
-from foodgram.settings import PATH_TO_FONTS
+from foodgram.settings import ENCODING, PATH_TO_FONTS
+
 
 HTML_TEMPLATE = """
     <!DOCTYPE html>
@@ -57,9 +58,9 @@ def make_pdf(user):
 
     buffer = BytesIO()
     pisa.CreatePDF(
-        formatted_html_tenplate.encode('utf-8'),
+        formatted_html_tenplate.encode(ENCODING),
         buffer,
-        encoding='utf-8'
+        encoding=ENCODING
     )
 
     pdf = buffer.getvalue()

@@ -138,3 +138,4 @@ MAX_AMOUNT = 10000
 MIN_TAGS = 1
 MAX_TAGS = 3
 PATH_TO_FONTS = BASE_DIR / 'api' / 'utils' / 'fonts' / 'font.css'
+ENCODING = 'utf-8'

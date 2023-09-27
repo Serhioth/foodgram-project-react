@@ -40,10 +40,8 @@ class UserSerializer(serializers.ModelSerializer):
         """Checking that the username meets the registration requirements. """
         if not check_username(value):
             raise serializers.ValidationError(
-                {'message':
-                    'The username should not be Me, '
-                    'contains invalid characters, '
-                    'or exceeds the allowed length of 150 characters'}
+                {'message': ('The username contains invalid characters or '
+                             'exceeds the allowed length of 150 characters')}
             )
         return value
 

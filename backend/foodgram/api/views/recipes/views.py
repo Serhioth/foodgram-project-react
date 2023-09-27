@@ -1,3 +1,5 @@
+import base64
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -91,6 +93,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
 
+        with open(recipe.image.path, 'rb') as image_file:
+            encoded_image = base64.b64encode(image_file.read())
+
         if request.method == 'POST':
             if recipe in user.shopping_cart.all():
                 return Response(
@@ -103,7 +108,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {
                     'id': recipe.id,
                     'name': recipe.name,
-                    'image': str(bytes(recipe.image.read())),
+                    'image': encoded_image,
                     'cooking_time': recipe.cooking_time
                 },
                 status=status.HTTP_201_CREATED
@@ -129,6 +134,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
 
+        with open(recipe.image.path, 'rb') as image_file:
+            encoded_image = base64.b64encode(image_file.read())
+
         if request.method == 'POST':
             if recipe in user.favorited_recipes.all():
                 return Response(
@@ -141,7 +149,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {
                     'id': recipe.id,
                     'name': recipe.name,
-                    'image': recipe.image.read().decode(),
+                    'image': encoded_image,
                     'cooking_time': recipe.cooking_time
                 },
                 status=status.HTTP_201_CREATED

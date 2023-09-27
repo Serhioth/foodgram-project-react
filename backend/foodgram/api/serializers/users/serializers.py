@@ -80,6 +80,7 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
     """Serializer for subscriptions. """
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -108,3 +109,10 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, object):
         return object.recipes.all().count()
+
+    def get_is_subscribed(self, object):
+
+        return object.username in self.context.get(
+            'request',
+            None
+        ).user.get_subscribes()

@@ -22,7 +22,7 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', )
-    http_method_names = ('get', 'post')
+    http_method_names = ('get', 'post', 'delete')
 
     @action(
         methods=('GET', ),
@@ -53,9 +53,9 @@ class CustomUserViewSet(UserViewSet):
         url_path='subscribe',
         permission_classes=(IsAuthenticated, )
     )
-    def edit_subscribes(self, request, pk=None):
+    def edit_subscribes(self, request, id=None):
         user = request.user
-        subscribe = get_object_or_404(User, pk=pk)
+        subscribe = get_object_or_404(User, pk=id)
 
         if request.method == 'POST':
             if subscribe in user.subscribes.all():

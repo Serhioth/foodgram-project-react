@@ -13,9 +13,9 @@ services:
     image: serhioth/foodgram_backend:latest
     restart: always
     volumes:
-      - ./static/:/app/foodgram/static/
-      - ./media/:/app/foodgram/media/
-      - ./docs/:/app/docs/
+      - static_volume:/app/foodgram/static/
+      - media_volume:/app/foodgram/media/
+      - docs_volume:/app/docs/
     expose:
       - 8000
     depends_on:
@@ -26,7 +26,7 @@ services:
   frontend:
     image: serhioth/foodgram_frontend:latest
     volumes:
-      - frontend_build:/usr/share/nginx/html/
+      - frontend_build:/app/result_build/
     depends_on:
       - backend
 
@@ -36,17 +36,19 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./static:/usr/share/nginx/html/static
-      - ./media:/usr/share/nginx/html/media
+      - static_volume:/usr/share/nginx/html/static
+      - media_volume:/usr/share/nginx/html/media
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - /etc/letsencrypt:/etc/letsencrypt
-      - ../frontend/build:/usr/share/nginx/html/
-      - ./docs/:/usr/share/nginx/html/api/docs/
+      - frontend_build:/usr/share/nginx/html/
+      - docs_volume:/usr/share/nginx/html/api/docs/
     restart: always
     depends_on:
       - frontend
 
 volumes:
-  nginx.conf:
   db_data:
   frontend_build:
+  media_volume:
+  static_volume:
+  docs_volume:

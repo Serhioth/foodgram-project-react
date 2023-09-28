@@ -21,6 +21,7 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = UserSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
+    permission_classes = (IsAuthenticated, )
 
     @action(
         methods=('GET', ),

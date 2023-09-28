@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from rest_framework import serializers
 
 from api.serializers.recipes.serializer_fields import Base64ImageField
@@ -37,8 +38,10 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     def validate_amount(self, value):
         if value < MIN_AMOUNT or value > MAX_AMOUNT:
             raise serializers.ValidationError(
-                f'Amount of ingredient should not be less than {MIN_AMOUNT} '
-                f'and more than {MAX_AMOUNT}.'
+                {'amount': ('Amount of ingredient should'
+                            f' not be less than {MIN_AMOUNT} '
+                            f'and more than {MAX_AMOUNT}.')},
+                code=HTTPStatus.BAD_REQUEST
             )
         return value
 
@@ -139,7 +142,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, value):
         if not value:
             raise serializers.ValidationError(
-                'At least one ingredient is required.'
+                {'ingredients': 'At least one ingredient is required.'},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         ingredient_ids = {ingredient['ingredient'].id for ingredient in value}
@@ -148,30 +152,34 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         if unique_ingredient_ids != total_ingredient_ids:
             raise serializers.ValidationError(
-                'Each ingredient must be unique. '
-                'Repeated ingredients are not allowed.'
+                {'ingredients': ('Each ingredient must be unique. '
+                                 'Repeated ingredients are not allowed.')},
+                code=HTTPStatus.BAD_REQUEST
             )
         if (
             unique_ingredient_ids < MIN_INGREDIENTS
             or MAX_INGREDIENTS < unique_ingredient_ids
         ):
             raise serializers.ValidationError(
-                'Number of ingredients must '
-                f'be more then {MIN_INGREDIENTS}'
-                f' and less then {MAX_INGREDIENTS}.'
+                {'ingredients': ('Number of ingredients must '
+                                 f'be more then {MIN_INGREDIENTS}'
+                                 f' and less then {MAX_INGREDIENTS}.')},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         if unique_ingredient_ids != total_ingredient_ids:
             raise serializers.ValidationError(
-                'Each ingredient must be unique. '
-                'Repeated ingredients are not allowed.'
+                {'ingredients': ('Each ingredient must be unique. '
+                                 'Repeated ingredients are not allowed.')},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         if not Ingredient.objects.filter(
             pk__in=ingredient_ids
         ).count() == unique_ingredient_ids:
             raise serializers.ValidationError(
-                'Invalid ingredient ID(s) provided.'
+                {'ingredients': 'Invalid ingredient ID(s) provided.'},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         return value
@@ -182,19 +190,22 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         if num_of_tags < MIN_TAGS:
             raise serializers.ValidationError(
-                'Recipe should have '
-                f'at least {MIN_TAGS} tag(s).'
+                {'tags': ('Recipe should have '
+                          f'at least {MIN_TAGS} tag(s).')},
+                code=HTTPStatus.BAD_REQUEST
             )
         if num_of_tags > MAX_TAGS:
             raise serializers.ValidationError(
-                'Recipe should not have '
-                f'more than {MAX_TAGS} tag(s).'
+                {'tags': ('Recipe should not have '
+                          f'more than {MAX_TAGS} tag(s).')},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         tag_ids = [tag.id for tag in tags]
         if len(set(tag_ids)) != num_of_tags:
             raise serializers.ValidationError(
-                'Tags should not be repeated.'
+                {'tags': 'Tags should not be repeated.'},
+                code=HTTPStatus.BAD_REQUEST
             )
 
         return tags
@@ -203,11 +214,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         if MIN_COOKING_TIME <= value <= MAX_COOKING_TIME:
             return value
         return serializers.ValidationError(
-            'Time of cooking should not be, '
-            f'less than {MIN_COOKING_TIME}. '
-            'If cooking of your dishes'
-            f'require more time than {MAX_COOKING_TIME}'
-            'please contact site administration.',
+            {'cooking_time': ('Time of cooking should not be, '
+                              f'less than {MIN_COOKING_TIME}. '
+                              'If cooking of your dishes'
+                              f'require more time than {MAX_COOKING_TIME}'
+                              'please contact site administration.',)},
+            code=HTTPStatus.BAD_REQUEST
         )
 
     def create(self, validated_data):

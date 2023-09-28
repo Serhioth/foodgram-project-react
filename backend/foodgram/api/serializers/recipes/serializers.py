@@ -37,7 +37,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
     def validate_amount(self, value):
         if value < MIN_AMOUNT or value > MAX_AMOUNT:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'amount': ('Amount of ingredient should'
                             f' not be less than {MIN_AMOUNT} '
                             f'and more than {MAX_AMOUNT}.')},
@@ -141,7 +141,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, value):
         if not value:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'ingredients': 'At least one ingredient is required.'},
                 code=HTTPStatus.BAD_REQUEST
             )
@@ -151,7 +151,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         total_ingredient_ids = len(value)
 
         if unique_ingredient_ids != total_ingredient_ids:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'ingredients': ('Each ingredient must be unique. '
                                  'Repeated ingredients are not allowed.')},
                 code=HTTPStatus.BAD_REQUEST
@@ -160,7 +160,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             unique_ingredient_ids < MIN_INGREDIENTS
             or MAX_INGREDIENTS < unique_ingredient_ids
         ):
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'ingredients': ('Number of ingredients must '
                                  f'be more then {MIN_INGREDIENTS}'
                                  f' and less then {MAX_INGREDIENTS}.')},
@@ -168,7 +168,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             )
 
         if unique_ingredient_ids != total_ingredient_ids:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'ingredients': ('Each ingredient must be unique. '
                                  'Repeated ingredients are not allowed.')},
                 code=HTTPStatus.BAD_REQUEST
@@ -177,7 +177,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         if not Ingredient.objects.filter(
             pk__in=ingredient_ids
         ).count() == unique_ingredient_ids:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'ingredients': 'Invalid ingredient ID(s) provided.'},
                 code=HTTPStatus.BAD_REQUEST
             )
@@ -189,13 +189,13 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         num_of_tags = len(value)
 
         if num_of_tags < MIN_TAGS:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'tags': ('Recipe should have '
                           f'at least {MIN_TAGS} tag(s).')},
                 code=HTTPStatus.BAD_REQUEST
             )
         if num_of_tags > MAX_TAGS:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'tags': ('Recipe should not have '
                           f'more than {MAX_TAGS} tag(s).')},
                 code=HTTPStatus.BAD_REQUEST
@@ -203,7 +203,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
         tag_ids = [tag.id for tag in tags]
         if len(set(tag_ids)) != num_of_tags:
-            raise serializers.ValidationError(
+            return serializers.ValidationError(
                 {'tags': 'Tags should not be repeated.'},
                 code=HTTPStatus.BAD_REQUEST
             )
@@ -217,7 +217,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             {'cooking_time': ('Time of cooking should not be, '
                               f'less than {MIN_COOKING_TIME}. '
                               'If cooking of your dishes'
-                              f'require more time than {MAX_COOKING_TIME}'
+                              'require more time'
+                              f' than {MAX_COOKING_TIME}'
                               'please contact site administration.',)},
             code=HTTPStatus.BAD_REQUEST
         )

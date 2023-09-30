@@ -6,7 +6,6 @@ from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -18,6 +17,7 @@ from api.serializers.recipes.serializers import (CreateRecipeSerializer,
                                                  IngredientSerializer,
                                                  TagSerializer)
 from api.serializers.recipes.renderers import CONTENT_TYPE
+from pagination import RecipesPagination
 from recipes.models import Ingredient, Recipe, Tag
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -48,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     queryset = Recipe.objects.all()
     serializer_class = CreateRecipeSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = RecipesPagination
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = RecipeFilter
     ordering_fields = ('created_at', 'updated_at')

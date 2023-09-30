@@ -17,7 +17,7 @@ from api.serializers.recipes.serializers import (CreateRecipeSerializer,
                                                  IngredientSerializer,
                                                  TagSerializer)
 from api.serializers.recipes.renderers import CONTENT_TYPE
-from pagination import RecipesPagination
+from api.views.recipes.pagination import RecipesPagination
 from recipes.models import Ingredient, Recipe, Tag
 
 DATE_FORMAT = '%Y-%m-%d'
